@@ -1,0 +1,87 @@
+<!-- 
+  This ANT configuration file can be used to compile and run the
+  applications.
+-->
+
+<project name="Princeton Kaltura Examples" basedir="." default="help">
+
+	<!-- Initialize build environment. -->
+	<target description="Define directories and set CLASSPATH" name="init">
+
+		<!-- Source directories -->
+		<property name="src.dir" value="${basedir}/src"/>
+
+                <!-- Directory containing a JAR file of all Kaltura api class files
+                     as well as all JAR files that the api depends on.  Here I have
+                     downloaded and built the api in a subdirectory named "kaltura_java_api" -->
+		<property name="kaltura_api_lib.dir" value="${basedir}/kaltura_java_api/lib"/>
+
+		<!-- Build directories -->
+		<property name="build.dir" value="${basedir}/build"/>
+
+		<!-- Configuration directory containing config files -->
+		<property name="config.dir" value="${basedir}/config"/>
+
+		<!-- Initilize the class path -->
+		<echo message="==== Setting CLASSPATH ===="/>
+
+		<path id="project.class.path">
+			<fileset dir="${kaltura_api_lib.dir}" includes="**/*.jar"/>
+		</path>
+
+                <path id="run.classpath">
+                        <path refid="project.class.path"/>
+                        <pathelement location="${build.dir}"/>
+                        <pathelement location="${config.dir}"/>
+                </path>
+
+		<property name="build.debug" value="true"/>
+
+	</target>
+
+        <!-- Compile Java source code -->
+	<target description="Compile source files" name="compile" depends="init">
+
+		<echo message="==== Compiling source files. ===="/>
+
+                <!-- Create the build directory if it doesn't already exist -->
+                <mkdir dir="${build.dir}"/>
+
+		<javac destdir="${build.dir}" srcdir="${src.dir}" debug="${build.debug}" deprecation="false"
+			includeantruntime="false">
+			<classpath refid="project.class.path"/>
+			<classpath>
+				<pathelement location=""/>
+			</classpath>
+			<include name="*.java"/>
+		</javac>
+
+	</target>
+
+	<!-- Delete compilation products. -->
+	<target description="Delete all build products" name="clean" depends="init">
+		
+		<echo message="==== Deleting build products ===="/>
+		<delete dir="${build.dir}"/>
+		
+	</target>
+
+        <!-- Run the application -->
+        <target name="run_SetAccessByCategory" description="Run the SetAccessByCategory application." depends="compile">
+          <java classname="SetAccessByCategory" fork="true">
+            <classpath refid="run.classpath"/>
+          </java>
+        </target>
+
+	<!-- Help for targets -->
+	<target name= "help" description="List all targets for the project">
+		
+		<java classname="org.apache.tools.ant.Main">
+			<arg value="-projecthelp" />
+			<arg value="-buildfile" />
+			<arg value="${ant.file}" />
+		</java>
+		
+	</target>
+
+</project>
