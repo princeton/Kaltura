@@ -56,7 +56,7 @@ public class SetAccessByCategory {
 	// Load configuration values from the config file
 	static 
 	{	
-                // The name of the configuration file from which values will be loaded
+        // The name of the configuration file from which values will be loaded
 		String config_file_name = "config";
 
 		ResourceBundle rb = ResourceBundle.getBundle(config_file_name);
@@ -72,13 +72,16 @@ public class SetAccessByCategory {
 	}
 	
 	// The Kaltura client that will be used to perform the administrative tasks
-	static public KalturaClient client;
+	static private KalturaClient client;
 
 	/**
 	 * The main method simply calls the setAccess() method
 	 */
 	public static void main(String[] args) {
 
+		logger.info("=====================================================================================");
+		logger.info("Running SetAccessByCategory application on category "+target_category+
+				  " applying access profile "+target_access_profile_id);
 		try 
 		{
 			setAccess(target_category, target_access_profile_id);
@@ -87,6 +90,9 @@ public class SetAccessByCategory {
 		{
 			logger.error("Application failed", e);
 		}
+		
+		logger.info("Application SetAccessByCategory completed.");
+		logger.info("=====================================================================================");
 	}
 
 	/**
@@ -118,7 +124,7 @@ public class SetAccessByCategory {
 			throw new KalturaApiException("Failed to generate session");
 		}
 
-		logger.debug("Generated Kaltura session ID: " + client.getSessionId());
+		logger.info("Generated Kaltura session ID: " + client.getSessionId());
 		
 		return client;
 	}
@@ -136,11 +142,12 @@ public class SetAccessByCategory {
 		// Create the filter that will return videos only from the specified category
 		KalturaMediaEntryFilter filter = new KalturaMediaEntryFilter();
 		filter.categoryAncestorIdIn = String.valueOf(category_id);
+		filter.statusEqual = KalturaEntryStatus.READY;
 
-		// Create a pager that will allow us to work with the list in batches ("pages")
+		// Create a pager that will allow us to work with the list in batches ("pages") of 50
 		KalturaFilterPager pager = new KalturaFilterPager();
-		pager.pageSize = 10;
-		pager.pageIndex=1;
+		pager.pageSize = 50;
+		pager.pageIndex = 1;
 
 		// Get the list of videos in the category
 		KalturaMediaListResponse list;
@@ -148,7 +155,7 @@ public class SetAccessByCategory {
 
 		// Get the total number of videos
 		int total_num = list.totalCount;
-		logger.info("Total number of entries found: "+total_num);
+		logger.info("Total number of entries found in the category: "+total_num);
 
 		// Compute the number of batches/pages
 		int num_pages = total_num/pager.pageSize;
@@ -157,12 +164,11 @@ public class SetAccessByCategory {
 		// Step through each batch/page
 		while (pager.pageIndex <= num_pages)
 		{
-
+			list = kclient.getMediaService().list(filter, pager);
+			
 			// Step through each media entry in the batch/page
 			for (KalturaMediaEntry entry : list.objects) 
 			{
-
-
 
 				// If the entry's access control profile is not what we intend,
 				//  then set it.
@@ -178,9 +184,10 @@ public class SetAccessByCategory {
 					entryUpdate.accessControlId = access_control_id;  
 
 					// Update the Entry
-					//kclient.getMediaService().update(entry.id, entryUpdate);
+					kclient.getMediaService().update(entry.id, entryUpdate);
 
-					System.exit(0);
+					// Exit after processing one entry_id when debugging
+					//System.exit(0);
 				}
 			}
 			
