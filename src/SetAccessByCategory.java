@@ -10,32 +10,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Iterator;
-
-//import javax.swing.text.html.HTMLDocument.Iterator;
+import java.util.ResourceBundle;
 
 import com.kaltura.client.KalturaApiException;
 import com.kaltura.client.KalturaClient;
 import com.kaltura.client.KalturaConfiguration;
-import com.kaltura.client.KalturaMultiResponse;
 import com.kaltura.client.enums.KalturaEntryStatus;
-import com.kaltura.client.enums.KalturaMediaType;
 import com.kaltura.client.enums.KalturaSessionType;
 import com.kaltura.client.services.KalturaMediaService;
 import com.kaltura.client.types.KalturaMediaEntry;
 import com.kaltura.client.types.KalturaMediaListResponse;
-import com.kaltura.client.types.KalturaPartner;
-import com.kaltura.client.types.KalturaUploadToken;
-import com.kaltura.client.types.KalturaUploadedFileTokenResource;
 import com.kaltura.client.types.KalturaFilterPager;
 import com.kaltura.client.types.KalturaMediaEntryFilter;
-
-import com.kaltura.client.types.KalturaFlavorAsset;
-import com.kaltura.client.services.KalturaFlavorAssetService;
-
-import com.kaltura.client.test.KalturaTestConfig;
-import com.kaltura.client.test.TestUtils;
-
-import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
