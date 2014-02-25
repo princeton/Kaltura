@@ -37,6 +37,7 @@ public class SetAccessByCategory {
 	private static final String ENDPOINT;
 	private static final String USER_ID;
 	private static final int target_category;
+	private static final int current_access_profile_id;
 	private static final int target_access_profile_id;
 	
 	// Load configuration values from the config file
@@ -54,6 +55,7 @@ public class SetAccessByCategory {
 		USER_ID = rb.getString("USER_ID");
 		
 		target_category = Integer.parseInt(rb.getString("target_category"));
+		current_access_profile_id = Integer.parseInt(rb.getString("current_access_profile_id"));
 		target_access_profile_id = Integer.parseInt(rb.getString("target_access_profile_id"));
 	}
 	
@@ -70,7 +72,7 @@ public class SetAccessByCategory {
 				  " applying access profile "+target_access_profile_id);
 		try 
 		{
-			setAccess(target_category, target_access_profile_id);
+			setAccess(target_category, current_access_profile_id, target_access_profile_id);
 		} 
 		catch (KalturaApiException e) 
 		{
@@ -119,9 +121,12 @@ public class SetAccessByCategory {
 	 * Set the access profile on all videos in a category
 	 * 
 	 * @param category_id The ID of the category containing the videos
-	 * @param access_control_id The ID of the access control profile that will be applied to the videos
+	 * @param current_accesscontrol_id The current access control profile of the videos that should be changed to the desired access control 
+	 *                                 profile.  If this value is 0, then all videos in the category regardless of their current access
+	 *                                 control profile will be assigned the desired access control profile.
+	 * @param desired_accesscontrol_id The ID of the access control profile that will be applied to the videos
 	 */
-	private static void setAccess(int category_id, int access_control_id) throws KalturaApiException {
+	private static void setAccess(int category_id, int current_accesscontrol_id, int desired_accesscontrol_id) throws KalturaApiException {
 
 		KalturaClient kclient = getKalturaClient();
 
@@ -129,6 +134,9 @@ public class SetAccessByCategory {
 		KalturaMediaEntryFilter filter = new KalturaMediaEntryFilter();
 		filter.categoryAncestorIdIn = String.valueOf(category_id);
 		filter.statusEqual = KalturaEntryStatus.READY;
+		
+		// If a current access control profile was specified, then filter based on that profile
+		if (current_accesscontrol_id != 0) filter.accessControlIdEqual = current_accesscontrol_id;
 
 		// Create a pager that will allow us to work with the list in batches ("pages") of 50
 		KalturaFilterPager pager = new KalturaFilterPager();
@@ -158,16 +166,16 @@ public class SetAccessByCategory {
 
 				// If the entry's access control profile is not what we intend,
 				//  then set it.
-				if (entry.accessControlId != access_control_id)
+				if (entry.accessControlId != desired_accesscontrol_id)
 				{
 					logger.info("Changing access profile for ENTRY_ID: "+entry.id);
 					logger.info("Entry Title: '"+entry.name+"'");
 					logger.info("Original Entry Access Control Profile: "+entry.accessControlId);
-					logger.info("New Entry Access Control Profile: "+access_control_id);
+					logger.info("New Entry Access Control Profile: "+desired_accesscontrol_id);
 					
 					// Create an empty KalturaMediaEntry object with only the accessControlId defined
 					KalturaMediaEntry entryUpdate = new KalturaMediaEntry();
-					entryUpdate.accessControlId = access_control_id;  
+					entryUpdate.accessControlId = desired_accesscontrol_id;  
 
 					// Update the Entry
 					kclient.getMediaService().update(entry.id, entryUpdate);
