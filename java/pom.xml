@@ -1,0 +1,100 @@
+<!--                                                   -->
+<!-- Maven POM file for Kaltura admin code             -->
+<!--                                                   -->
+<!-- Author:  Mark Ratliff, Princeton University       -->
+<!--                                                   -->
+
+<project 
+  xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+     <!-- Define the GAV coordinate for the project -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>edu.princeton</groupId>
+    <artifactId>PUKaltura</artifactId>
+    <version>0.0.1</version>
+
+  <!-- Libraries on which the application dependends -->
+  <dependencies>
+    
+    <!-- Kaltura Java API -->
+    <dependency>
+      <groupId>com.kaltura</groupId>
+      <artifactId>kalturaClient</artifactId>
+      <version>3.2.1</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20160212</version>
+    </dependency>
+    
+    
+    
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <!-- Uncomment section below if we ant all class files from dependent libraries packaged in the same JAR file as the application -->
+      <!-- Package all dependent classes in same JAR file, see http://maven.apache.org/plugins/maven-assembly-plugin/usage.html -->
+      <!--
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+      
+      <!-- Copy all dependent libraries to the target/lib folder -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.7</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+    </plugins>
+  </build>
+  
+</project>
