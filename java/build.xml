@@ -73,6 +73,13 @@
           </java>
         </target>
 
+        <!-- Run the application -->
+        <target name="run_ReportStorageByCategory" description="Run the ReportStorageByCategory application." depends="compile">
+          <java classname="ReportStorageByCategory" fork="true">
+            <classpath refid="run.classpath"/>
+          </java>
+        </target>
+
 	<!-- Help for targets -->
 	<target name= "help" description="List all targets for the project">
 		
