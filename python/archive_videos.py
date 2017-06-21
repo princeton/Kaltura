@@ -4,6 +4,33 @@ from KalturaClient import *
 from KalturaClient.Plugins.Core import *
 from datetime import datetime
 
+'''
+Runs only with Python v2.x
+
+Library/SDK dependencies:
+
+To install Kaltura Python SDK
+
+curl -O http://cdnbakmi.kaltura.com/content/clientlibs/python_02-03-2017.tar.gz
+
+cd python
+
+sudo python27 setup.py install
+
+To install poser SDK
+
+curl -O https://pypi.python.org/packages/9f/dc/0683a458d21c3d561ab2f71b4fcdd812bf04e55c54e560b0854cea95610e/poster-0.8.1.tar.gz#md5=2db12704538781fbaa7e63f1505d6fc8
+
+cd poster
+
+sudo python27 setup.py install
+
+To install boto3 SDK for AWS
+
+sudo pip install boto3
+
+'''
+
 partnerId = os.getenv("KALTURA_PARTNERID")
 secret = os.getenv("KALTURA_SECRET")
 userId = os.getenv("KALTURA_USERID")
